@@ -21,7 +21,6 @@ while True:
 
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
-    # Step 1: Detect faces
     faces = face_cascade.detectMultiScale(
         gray, scaleFactor=1.1, minNeighbors=5, minSize=(60, 60)
     )
@@ -29,42 +28,31 @@ while True:
     for (x, y, w, h) in faces:
         face_gray = gray[y:y + h, x:x + w]
         face_color = frame[y:y + h, x:x + w]
-
-        # Step 2: Detect smile within the face region
         smiles = smile_cascade.detectMultiScale(
             face_gray, scaleFactor=1.8, minNeighbors=20, minSize=(25, 25)
         )
 
-        # Step 3: Detect eyes within the face region
         eyes = eye_cascade.detectMultiScale(
             face_gray, scaleFactor=1.1, minNeighbors=5, minSize=(20, 20)
         )
 
-        # Step 4: Determine emotion from what's detected
         if len(smiles) > 0:
             emotion = "Happy :)"
-            color = (0, 255, 0)      # Green
+            color = (0, 255, 0)      
         elif len(eyes) == 0:
             emotion = "Eyes Closed"
-            color = (255, 255, 0)    # Yellow
+            color = (255, 255, 0)   
         else:
             emotion = "Neutral :|"
-            color = (0, 165, 255)    # Orange
-
-        # Draw face box
+            color = (0, 165, 255)   
         cv2.rectangle(frame, (x, y), (x + w, y + h), color, 2)
-
-        # Display emotion label
         cv2.putText(
             frame, emotion, (x, y - 10),
             cv2.FONT_HERSHEY_SIMPLEX, 0.8, color, 2
         )
 
-        # Draw eye boxes
         for (ex, ey, ew, eh) in eyes:
             cv2.rectangle(face_color, (ex, ey), (ex + ew, ey + eh), (255, 0, 0), 1)
-
-    # Face count display
     cv2.putText(
         frame, f'Faces: {len(faces)}', (10, 30),
         cv2.FONT_HERSHEY_SIMPLEX, 0.8, (255, 255, 255), 2
